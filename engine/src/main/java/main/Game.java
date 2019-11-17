@@ -14,8 +14,8 @@ public class Game {
     private InputHandler inputHandler;
     private InputReader inputReader;
 
-    private static final int WIDTH = 1920;
-    private static final int HEIGHT = 1080;
+    private static final int WIDTH = 1020;
+    private static final int HEIGHT = 780;
 
     private boolean running = false;
     private long window;
@@ -47,8 +47,8 @@ public class Game {
         glfwSetKeyCallback(window, inputReader);
         GL.createCapabilities();
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, vidmode.width(),
-                0);
+        glfwSetWindowPos(window, vidmode.width()/2,
+                vidmode.height()/2);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_1D);
         glEnable(GL_BLEND);

@@ -1,3 +1,9 @@
-input/InputReader.class
-main/Game.class
-render/DisplayManager.class
+main\Game.class
+utils\BufferUtils.class
+utils\FileUtils.class
+utils\ShaderUtils.class
+input\InputHandler.class
+graphics\Shader.class
+math\Matrix4f.class
+math\Vector3f.class
+input\InputReader.class
