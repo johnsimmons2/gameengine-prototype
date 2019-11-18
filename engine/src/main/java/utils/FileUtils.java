@@ -21,7 +21,7 @@ public class FileUtils {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String buffer = "";
             while((buffer = reader.readLine()) != null) {
-                builder.append(buffer);
+                builder.append(buffer + '\n');
             }
         } catch (IOException e) {
             e.printStackTrace();

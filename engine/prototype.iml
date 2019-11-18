@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="ExternalSystem" externalSystem="Maven" />
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -13,9 +14,9 @@
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-glfw:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-opengl:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-stb:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl:natives-windows:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-glfw:natives-windows:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-openal:natives-windows:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-stb:natives-windows:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl:natives-macos:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-glfw:natives-macos:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-openal:natives-macos:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-stb:natives-macos:3.1.0" level="project" />
   </component>
 </module>

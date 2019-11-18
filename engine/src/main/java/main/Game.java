@@ -1,12 +1,18 @@
 package main;
 
+import graphics.Shader;
+import graphics.Texture;
 import input.InputHandler;
 import input.InputReader;
+import level.Level;
+import math.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Game {
@@ -16,6 +22,8 @@ public class Game {
 
     private static final int WIDTH = 1020;
     private static final int HEIGHT = 780;
+
+    private Level level;
 
     private boolean running = false;
     private long window;
@@ -36,6 +44,15 @@ public class Game {
             throw new IllegalStateException("Failed to initialize glfw");
         }
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+        /**
+         * MacOS Compatibility
+         */
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
         window = glfwCreateWindow(WIDTH, HEIGHT, "Title", NULL, NULL);
         if (window == NULL) {
             System.err.println("Could not create GLFW Window");
@@ -49,10 +66,26 @@ public class Game {
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, vidmode.width()/2,
                 vidmode.height()/2);
+
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_1D);
+        glActiveTexture(GL_TEXTURE1);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        Shader.loadAll();
+//        Texture.loadAll();
+
+        Matrix4f pr_matrix = Matrix4f.orthographic(-10.0f,
+                10.0f,
+                -10.0f * 9.0f / 16.0f,
+                10.0f * 9.0f / 16.0f,
+                -1.0f,
+                1.0f);
+        Shader.BACKGROUND.enable();
+        Shader.BACKGROUND.setUniformMat4f("pr_matrix", pr_matrix);
+        Shader.BACKGROUND.setUniform1i("tex", 1);
+        Shader.BACKGROUND.disable();
+        level = new Level();
     }
 
     public void terminate() {
@@ -61,6 +94,10 @@ public class Game {
 
     private void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        level.render();
+        int i = glGetError();
+        if (i != GL_NO_ERROR)
+            System.err.println(i + " GL ERROR");
         glfwSwapBuffers(window);
     }
 
@@ -72,6 +109,7 @@ public class Game {
     public void run() {
         running = true;
         while(running) {
+            System.out.println("running");
             if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
                 terminate();
             }
