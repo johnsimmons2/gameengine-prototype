@@ -15,6 +15,14 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * TODO:
+ *
+ *
+ * TODO: (notes)
+ *      Currently it works on Windows, but on Mac it freezes up when rendering. Almost as if loading the textures
+ *          is synchronous
+ */
 public class Game {
 
     private InputHandler inputHandler;
