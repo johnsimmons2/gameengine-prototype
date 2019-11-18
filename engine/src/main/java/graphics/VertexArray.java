@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 
-public class VertexArray {
+public class VertexArray implements IRenderable {
 
     private int vao, vbo, ibo, tco;
     private int count;

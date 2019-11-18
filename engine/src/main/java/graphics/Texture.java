@@ -14,7 +14,7 @@ public class Texture {
     private int width, height;
     private int texture;
 
-    private Texture(String path) {
+    public Texture(String path) {
         texture = load(path);
     }
 

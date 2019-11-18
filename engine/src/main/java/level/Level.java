@@ -1,11 +1,14 @@
 package level;
 
+import graphics.IRenderable;
 import graphics.Shader;
+import graphics.Texture;
 import graphics.VertexArray;
 
-public class Level {
+public class Level implements IRenderable {
 
     private VertexArray background;
+    private Texture backgroundTexture;
 
     public Level() {
         float[] vertices = new float[] {
@@ -28,12 +31,15 @@ public class Level {
         };
 
         background = new VertexArray(vertices, indices, tcs);
+        backgroundTexture = new Texture("resources/bg.png");
     }
 
     public void render() {
+        backgroundTexture.bind();
         Shader.BACKGROUND.enable();
         background.render();
         Shader.BACKGROUND.disable();
+        backgroundTexture.unBind();
     }
 
 }

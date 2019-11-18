@@ -66,7 +66,6 @@ public class Game {
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, vidmode.width()/2,
                 vidmode.height()/2);
-//        glEnable(GL_TEXTURE_2D);
 
         glEnable(GL_DEPTH_TEST);
         glActiveTexture(GL_TEXTURE1);
@@ -84,6 +83,7 @@ public class Game {
                 1.0f);
         Shader.BACKGROUND.enable();
         Shader.BACKGROUND.setUniformMat4f("pr_matrix", pr_matrix);
+        Shader.BACKGROUND.setUniform1i("tex", 1);
         Shader.BACKGROUND.disable();
         level = new Level();
     }
@@ -109,6 +109,7 @@ public class Game {
     public void run() {
         running = true;
         while(running) {
+            System.out.println("running");
             if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
                 terminate();
             }
