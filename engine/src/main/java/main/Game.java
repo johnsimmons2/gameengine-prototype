@@ -1,13 +1,16 @@
 package main;
 
+import graphics.GraphicsLoader;
+import graphics.Renderer;
+import graphics.geometry.Geometry;
 import input.InputHandler;
 import input.InputReader;
 import level.Level;
 import math.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import shader.ShaderProgram;
-import shader.impl.StaticShader;
+import graphics.shaders.ShaderProgram;
+import graphics.shaders.impl.StaticShader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +30,14 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  *
  *
  * TODO: (notes)
- *      Currently it works on Windows, but on Mac it freezes up when rendering. Almost as if loading the textures
+ *      Currently it works on Windows, but on Mac it freezes up when rendering. Almost as if loading the graphics.textures
  *          is synchronous
  */
 public class Game {
 
     private InputHandler inputHandler;
     private InputReader inputReader;
+    private Renderer renderer;
 
     private List<ShaderProgram> loadedShaders;
 
@@ -57,6 +61,7 @@ public class Game {
 
     private void initWindow() throws IllegalStateException {
         loadedShaders = new ArrayList<>();
+        renderer = new Renderer();
         if (glfwInit() != (GL_TRUE == 1)) {
             System.err.println("Failed to initialize GLFW"); //TODO: Log
             throw new IllegalStateException("Failed to initialize glfw");
@@ -98,10 +103,10 @@ public class Game {
                 1.0f);
 
         StaticShader staticShader = new StaticShader();
-        staticShader.enable();
-        staticShader.setUniformMat4f("pr_matrix", pr_matrix);
-        staticShader.setUniform1i("tex", 1);
-        staticShader.disable();
+//        staticShader.enable();
+//        staticShader.setUniformMat4f("pr_matrix", pr_matrix);
+//        staticShader.setUniform1i("tex", 1);
+//        staticShader.disable();
         loadedShaders.add(staticShader);
 
         level = new Level(staticShader);
@@ -112,11 +117,15 @@ public class Game {
     }
 
     private void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        level.render();
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        level.render();
         int i = glGetError();
         if (i != GL_NO_ERROR)
             System.err.println(i + " GL ERROR");
+        renderer.prepare();
+        loadedShaders.get(0).enable();
+        renderer.render(level);
+        loadedShaders.get(0).disable();
         glfwSwapBuffers(window);
     }
 

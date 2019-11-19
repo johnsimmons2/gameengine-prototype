@@ -1,4 +1,4 @@
-package shader;
+package graphics.shaders;
 
 import math.Matrix4f;
 import math.Vector2f;
@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
 /**
- * When ID is -1, invalidate shader
+ * When ID is -1, invalidate graphics.shader
  */
 public abstract class ShaderProgram {
 
@@ -33,6 +33,7 @@ public abstract class ShaderProgram {
         glAttachShader(programID, fragmentID);
         glLinkProgram(programID);
         glValidateProgram(programID);
+        bindAttributes();
     }
 
     private static int loadShader(String source, int type) {
@@ -44,7 +45,7 @@ public abstract class ShaderProgram {
         glShaderSource(shaderID, shader);
         glCompileShader(shaderID);
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Failed to compile shader " + shaderID + ", " + source + ". Terminating proceess.");
+            System.err.println("Failed to compile graphics.shader " + shaderID + ", " + source + ". Terminating proceess.");
             System.exit(-1);
         }
         return shaderID;

@@ -1,12 +1,12 @@
-package shader.impl;
+package graphics.shaders.impl;
 
-import shader.ShaderProgram;
+import graphics.shaders.ShaderProgram;
 
 public class StaticShader extends ShaderProgram {
 
     /**
      * TODO: Could just make it one final static string and have it cleverly nab .vert and .frag conditional on
-     *          the shader files having same name...
+     *          the graphics.shader files having same name...
      */
     public static final String VERTEX_SRC = "src/main/resources/shaders/bg.vert";
     public static final String FRAGMENT_SRC = "src/main/resources/shaders/bg.frag";
@@ -18,5 +18,6 @@ public class StaticShader extends ShaderProgram {
     @Override
     protected void bindAttributes() {
         super.bindAttribute(0, "position");
+        super.bindAttribute(1, "texcoord");
     }
 }

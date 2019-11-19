@@ -1,14 +1,18 @@
 package level;
 
+import graphics.GraphicsLoader;
 import graphics.IRenderable;
-import graphics.Texture;
+import graphics.geometry.Geometry;
+import graphics.geometry.TexturedGeometry;
+import graphics.textures.Texture;
 import graphics.VertexArray;
-import shader.ShaderProgram;
+import graphics.shaders.ShaderProgram;
 
 public class Level implements IRenderable {
 
     private VertexArray background;
     private Texture backgroundTexture;
+    private TexturedGeometry tg;
     private ShaderProgram shader;
 
     public Level(ShaderProgram shader) {
@@ -32,8 +36,12 @@ public class Level implements IRenderable {
             1, 1
         };
 
-        background = new VertexArray(vertices, indices, tcs);
+        GraphicsLoader loader = new GraphicsLoader();
+        Geometry geometry = loader.loadToVAO(vertices, tcs, indices);
         backgroundTexture = new Texture("src/main/resources/bg.png");
+        tg = new TexturedGeometry(geometry, backgroundTexture);
+
+        //background = new VertexArray(vertices, indices, tcs);
     }
 
     public void render() {
@@ -42,6 +50,10 @@ public class Level implements IRenderable {
         background.render();
         shader.disable();
         backgroundTexture.unBind();
+    }
+
+    public TexturedGeometry getTexturedGeometry() {
+        return this.tg;
     }
 
 }

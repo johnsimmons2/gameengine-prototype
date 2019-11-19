@@ -1,6 +1,6 @@
 package graphics;
 
-import shader.ShaderProgram;
+import graphics.shaders.ShaderProgram;
 import utils.BufferUtils;
 
 import static org.lwjgl.opengl.GL20.*;

@@ -1,4 +1,4 @@
-package graphics;
+package graphics.textures;
 
 import utils.BufferUtils;
 
@@ -12,14 +12,14 @@ import static org.lwjgl.opengl.GL11.*;
 public class Texture {
 
     private int width, height;
-    private int texture;
+    private int textureID;
 
     public Texture(BufferedImage image) {
-        texture = load(image);
+        textureID = load(image);
     }
 
     public Texture(String path) {
-        texture = load(getBufferedImageFromPath(path));
+        textureID = load(getBufferedImageFromPath(path));
     }
 
     private int load(BufferedImage image) {
@@ -56,11 +56,14 @@ public class Texture {
     }
 
     public void bind() {
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, textureID);
     }
 
     public void unBind() {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    public int getTextureID() {
+        return textureID;
+    }
 }
