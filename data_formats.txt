@@ -1,0 +1,22 @@
+Entities can be made as JSON objects and parsed inside a level loader
+
+{
+  "type":"static",
+  "texture":"texture.png",
+  "source":"0, 0, 200, 200, 45",
+  .
+  .
+  .
+}
+
+containing other such properties. Source being indices of image to use followed by angle of rotation to use as default.
+
+Textures should contain rotation angles and flags for flipping vertical and horizontal.
+
+Tilesheets could be marked with
+
+"tilesheet":"true",
+"size":"16, 2, 2",
+"source":"1"
+
+so we know each cell is 16x16 pixels and the source tile for the given entity is found in the first 16x16 cell where the image is 2 rows by 2 columns of such cells. 
