@@ -24,6 +24,7 @@
             <id>macos-build</id>
             <activation>
                 <os>
+                    <!-- Requires the JVM Console param -XstartOnFirstThread -->
                     <family>mac</family>
                 </os>
             </activation>

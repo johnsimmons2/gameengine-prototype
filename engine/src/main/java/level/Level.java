@@ -1,16 +1,18 @@
 package level;
 
 import graphics.IRenderable;
-import graphics.Shader;
 import graphics.Texture;
 import graphics.VertexArray;
+import shader.ShaderProgram;
 
 public class Level implements IRenderable {
 
     private VertexArray background;
     private Texture backgroundTexture;
+    private ShaderProgram shader;
 
-    public Level() {
+    public Level(ShaderProgram shader) {
+        this.shader = shader;
         float[] vertices = new float[] {
             -10.0f, -10.0f * 9.0f / 16.0f, 0.0f,
             -10.0f, 10.0f * 9.0f / 16.0f, 0.0f,
@@ -31,14 +33,14 @@ public class Level implements IRenderable {
         };
 
         background = new VertexArray(vertices, indices, tcs);
-        backgroundTexture = new Texture("resources/bg.png");
+        backgroundTexture = new Texture("src/main/resources/bg.png");
     }
 
     public void render() {
         backgroundTexture.bind();
-        Shader.BACKGROUND.enable();
+        shader.enable();
         background.render();
-        Shader.BACKGROUND.disable();
+        shader.disable();
         backgroundTexture.unBind();
     }
 

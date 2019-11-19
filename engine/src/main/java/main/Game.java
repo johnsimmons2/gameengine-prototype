@@ -1,13 +1,16 @@
 package main;
 
-import graphics.Shader;
-import graphics.Texture;
 import input.InputHandler;
 import input.InputReader;
 import level.Level;
 import math.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import shader.ShaderProgram;
+import shader.impl.StaticShader;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -16,6 +19,10 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
+ *  It is necessary to have the following run configurations:
+ *      VM: -XstartOnFirstThread -Djava.awt.headless=true
+ *  The former allows Textures to render via ImageIO.read() without hanging
+ *
  * TODO:
  *
  *
@@ -27,6 +34,8 @@ public class Game {
 
     private InputHandler inputHandler;
     private InputReader inputReader;
+
+    private List<ShaderProgram> loadedShaders;
 
     private static final int WIDTH = 1020;
     private static final int HEIGHT = 780;
@@ -47,6 +56,7 @@ public class Game {
     }
 
     private void initWindow() throws IllegalStateException {
+        loadedShaders = new ArrayList<>();
         if (glfwInit() != (GL_TRUE == 1)) {
             System.err.println("Failed to initialize GLFW"); //TODO: Log
             throw new IllegalStateException("Failed to initialize glfw");
@@ -80,20 +90,21 @@ public class Game {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        Shader.loadAll();
-//        Texture.loadAll();
-
         Matrix4f pr_matrix = Matrix4f.orthographic(-10.0f,
                 10.0f,
                 -10.0f * 9.0f / 16.0f,
                 10.0f * 9.0f / 16.0f,
                 -1.0f,
                 1.0f);
-        Shader.BACKGROUND.enable();
-        Shader.BACKGROUND.setUniformMat4f("pr_matrix", pr_matrix);
-        Shader.BACKGROUND.setUniform1i("tex", 1);
-        Shader.BACKGROUND.disable();
-        level = new Level();
+
+        StaticShader staticShader = new StaticShader();
+        staticShader.enable();
+        staticShader.setUniformMat4f("pr_matrix", pr_matrix);
+        staticShader.setUniform1i("tex", 1);
+        staticShader.disable();
+        loadedShaders.add(staticShader);
+
+        level = new Level(staticShader);
     }
 
     public void terminate() {
@@ -114,18 +125,26 @@ public class Game {
         inputHandler.handle(this);
     }
 
+    public void stop() {
+        if (running)
+            running = false;
+        for (ShaderProgram shader : loadedShaders) {
+            shader.cleanUp();
+        }
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
+
     public void run() {
         running = true;
         while(running) {
-            System.out.println("running");
             if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
                 terminate();
             }
             update();
             render();
         }
-        glfwDestroyWindow(window);
-        glfwTerminate();
+        stop();
     }
 
     public static void main(String[] args) {
