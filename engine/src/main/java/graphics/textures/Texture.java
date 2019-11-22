@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class Texture {
 
@@ -38,6 +40,7 @@ public class Texture {
         }
         int result = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, result);
+        //glActiveTexture(GL_TEXTURE0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(data));
@@ -50,6 +53,7 @@ public class Texture {
         try {
             image = ImageIO.read(new FileInputStream(path));
         } catch (IOException e) {
+            System.err.println("Failed to get buffered image from path " + path);
             e.printStackTrace();
         }
         return image;
@@ -63,7 +67,7 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public int getTextureID() {
+    public int getID() {
         return textureID;
     }
 }

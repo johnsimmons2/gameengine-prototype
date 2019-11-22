@@ -1,11 +1,13 @@
-#version 330 core
+#version 400
 
 in vec2 pass_texcoord;
 
-layout (location = 0) out vec4 color;
+out vec4 color;
 
-uniform sampler2D tex;
+uniform sampler2D textureSampler;
 
 void main() {
-    color = texture(tex, pass_texcoord);
+    vec2 test = vec2(1, 1);
+    color = vec4(1, 1, 1, 0);
+    //color = texture(textureSampler, pass_texcoord);
 }

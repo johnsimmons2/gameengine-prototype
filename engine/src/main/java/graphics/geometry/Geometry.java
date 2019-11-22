@@ -2,11 +2,13 @@ package graphics.geometry;
 
 public class Geometry {
 
-    private int vaoID;
+    private int vaoID, vboID, iboID;
     private int vertexCount;
 
-    public Geometry(int vaoID, int vertexCount) {
+    public Geometry(int vaoID, int vboID, int iboID, int vertexCount) {
         this.vaoID = vaoID;
+        this.iboID = iboID;
+        this.vboID = vboID;
         this.vertexCount = vertexCount;
     }
 
@@ -16,6 +18,14 @@ public class Geometry {
      */
     public int getVaoID() {
         return vaoID;
+    }
+
+    public int getVboID() {
+        return vboID;
+    }
+
+    public int getIboID() {
+        return iboID;
     }
 
     /**

@@ -1,24 +1,19 @@
 package main;
 
-import graphics.GraphicsLoader;
 import graphics.Renderer;
-import graphics.geometry.Geometry;
+import graphics.shaders.ShaderProgram;
+import graphics.shaders.impl.TexturedShader;
 import input.InputHandler;
 import input.InputReader;
 import level.Level;
-import math.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import graphics.shaders.ShaderProgram;
-import graphics.shaders.impl.StaticShader;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -38,13 +33,12 @@ public class Game {
     private InputHandler inputHandler;
     private InputReader inputReader;
     private Renderer renderer;
+    private Level level;
 
     private List<ShaderProgram> loadedShaders;
 
     private static final int WIDTH = 1020;
     private static final int HEIGHT = 780;
-
-    private Level level;
 
     private boolean running = false;
     private long window;
@@ -87,46 +81,58 @@ public class Game {
         glfwSetKeyCallback(window, inputReader);
         GL.createCapabilities();
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, vidmode.width()/2,
-                vidmode.height()/2);
+        glfwSetWindowPos(window, 0, 0);
 
         glEnable(GL_DEPTH_TEST);
-        glActiveTexture(GL_TEXTURE1);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        Matrix4f pr_matrix = Matrix4f.orthographic(-10.0f,
-                10.0f,
-                -10.0f * 9.0f / 16.0f,
-                10.0f * 9.0f / 16.0f,
-                -1.0f,
-                1.0f);
+//        Matrix4f pr_matrix = Matrix4f.orthographic(-10.0f,
+//                10.0f,
+//                -10.0f * 9.0f / 16.0f,
+//                10.0f * 9.0f / 16.0f,
+//                -1.0f,
+//                1.0f);
 
-        StaticShader staticShader = new StaticShader();
+        float[] vertices = new float[] {
+//            -10.0f, -10.0f * 9.0f / 16.0f, 0.0f,
+//            -10.0f, 10.0f * 9.0f / 16.0f, 0.0f,
+//            0.0f, 10.0f * 9.0f / 16.0f, 0.0f,
+//            0.0f, -10.0f * 9.0f / 16.0f, 0.0f
+                -0.5f, 0.5f, 0,
+                -0.5f, -0.5f, 0,
+                0.5f, -0.5f, 0,
+                0.5f, 0.5f, 0
+        };
+
+
+        float[] tcs = new float[] {
+                0, 1,
+                0, 1,
+                1, 1,
+                1, 0
+        };
+
+        byte[] indices = new byte[] {
+                0, 1, 3,
+                3, 1, 2
+        };
+//
+//        GraphicsLoader loader = new GraphicsLoader();
+//        Geometry geometry = loader.loadToVAO(vertices, tcs, indices);
+//        Texture texture = new Texture("src/main/resources/bg.png");
+//        TexturedGeometry tgeom = new TexturedGeometry(geometry, texture);
 //        staticShader.enable();
 //        staticShader.setUniformMat4f("pr_matrix", pr_matrix);
 //        staticShader.setUniform1i("tex", 1);
 //        staticShader.disable();
-        loadedShaders.add(staticShader);
+       // loadedShaders.add(staticShader);
 
-        level = new Level(staticShader);
+        level = new Level();
     }
 
     public void terminate() {
         running = false;
-    }
-
-    private void render() {
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//        level.render();
-        int i = glGetError();
-        if (i != GL_NO_ERROR)
-            System.err.println(i + " GL ERROR");
-        renderer.prepare();
-        loadedShaders.get(0).enable();
-        renderer.render(level);
-        loadedShaders.get(0).disable();
-        glfwSwapBuffers(window);
     }
 
     private void update() {
@@ -154,6 +160,19 @@ public class Game {
             render();
         }
         stop();
+    }
+
+    private void render() {
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        level.render();
+        int i = glGetError();
+        if (i != GL_NO_ERROR) {
+            System.err.println(i + " GL ERROR");
+            terminate();
+        }
+        renderer.prepare();
+        renderer.render(level);
+        glfwSwapBuffers(window);
     }
 
     public static void main(String[] args) {

@@ -23,14 +23,38 @@ public class GraphicsLoader {
     public GraphicsLoader() {
     }
 
-    public Geometry loadToVAO(float[] positions, float[] texturecoords, byte[] indices) {
-        int vaoID = createVAO();
-        bindIndicesBuffer(indices);
-        storeDataInAttributeList(0, 3, positions);
-        storeDataInAttributeList(1, 2, texturecoords);
-        glBindVertexArray(0); // unBindVBO
-        return new Geometry(vaoID, indices.length);
+    public Geometry loadToVAOGeometry(float[] vertices, byte[] indices) {
+        int vao = glGenVertexArrays();
+        int vbo = glGenBuffers();
+        int ibo = glGenBuffers();
+
+        glBindVertexArray(vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);;
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BufferUtils.createByteBuffer(indices), GL_STATIC_DRAW);
+//        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);;
+//        glEnableVertexAttribArray(1);
+
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        return new Geometry(vao, vbo, ibo, indices.length);
     }
+
+//    public Geometry loadToVAO(float[] positions, float[] texturecoords, byte[] indices) {
+//        int vaoID = createVAO();
+//        bindIndicesBuffer(indices);
+//        storeDataInAttributeList(0, 3, positions);
+//        storeDataInAttributeList(1, 2, texturecoords);
+//        glBindVertexArray(0); // unBindVBO
+//        return new Geometry(vaoID, indices.length);
+//    }
 
     public void cleanUp() {
         for (int vao : vaos) {

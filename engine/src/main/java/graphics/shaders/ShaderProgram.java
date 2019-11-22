@@ -48,6 +48,7 @@ public abstract class ShaderProgram {
             System.err.println("Failed to compile graphics.shader " + shaderID + ", " + source + ". Terminating proceess.");
             System.exit(-1);
         }
+        System.out.println("Compiled shader with shader ID: " + shaderID);
         return shaderID;
     }
 
