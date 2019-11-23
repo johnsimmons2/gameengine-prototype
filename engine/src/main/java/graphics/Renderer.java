@@ -21,10 +21,8 @@ public class Renderer {
     private float time = 0f;
 
     public void prepare() {
-        //glEnable(GL_DEPTH_TEST);
-        glClear(GL_COLOR_BUFFER_BIT); //| GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.2f, 0.38f, 0.31f, 1);
-       // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.2f, 0.38f, 0.31f, 0.5f);
     }
 
     public void renderMesh(Mesh mesh) {

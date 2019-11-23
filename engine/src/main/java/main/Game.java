@@ -76,34 +76,6 @@ public class Game {
         level = new Level();
     }
 
-    private int[] windowPosX = new int[1], windowPosY = new int[1];
-
-    private void fuckYOU() {
-        if (!org.lwjgl.glfw.GLFW.glfwInit()) {
-            System.err.println("ERROR: GLFW wasn't initializied");
-            return;
-        }
-
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Title", NULL, NULL);
-
-        if (window == 0) {
-            System.err.println("ERROR: Window wasn't created");
-            return;
-        }
-
-        GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        windowPosX[0] = (videoMode.width() - WIDTH) / 2;
-        windowPosY[0] = (videoMode.height() - HEIGHT) / 2;
-        GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
-        GLFW.glfwMakeContextCurrent(window);
-        GL.createCapabilities();
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-
-        GLFW.glfwShowWindow(window);
-
-        GLFW.glfwSwapInterval(1);
-    }
-
     private void initWindow() throws IllegalStateException {
         if (glfwInit() != (GL_TRUE == 1)) {
             System.err.println("Failed to initialize GLFW"); //TODO: Log
@@ -131,7 +103,7 @@ public class Game {
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, WIDTH/2, HEIGHT/4);
 
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glfwShowWindow(window);
     }
 
@@ -159,34 +131,27 @@ public class Game {
         renderer = new Renderer();
         int count = 0;
         while(running) {
-            //if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
-             //   terminate();
-          //  }
-            update();
-            if (count < 1) {
-                level = new Level();
-                count += 1;
+            if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
+                terminate();
             }
+            update();
             render();
-            //render();
         }
         stop();
     }
 
     private void render() {
+        renderer.prepare();
 //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        glClearColor(1, 0, 0, 1);
 //        level.render();
         int i = glGetError();
         if (i != GL_NO_ERROR) {
             System.err.println(i + " GL ERROR");
             terminate();
         }
-      //  renderer.prepare();
-//        renderer.render(level);
-        window2.update();
-        renderer.renderMesh(mesh);
-        window2.swapBuffers();
-        //glfwSwapBuffers(window);
+        renderer.render(level);
+        glfwSwapBuffers(window);
     }
 
     public void fuck() {
@@ -196,7 +161,6 @@ public class Game {
         float[] vertices = new float[] {
                 -0.5f, 0.5f, 0,
                 -0.5f, -0.5f, 0,
-                0.5f, -0.5f, 0,
                 0.5f, 0.5f, 0
         };
 
@@ -212,7 +176,9 @@ public class Game {
 
     public static void main(String[] args) {
         Game game = new Game();
-        game.fuck();
+        game.initWindow();
+        game.initLevel();
+        game.run();
 //        game.fuckYOU();
 //        game.initLevel();
 //        game.run();
