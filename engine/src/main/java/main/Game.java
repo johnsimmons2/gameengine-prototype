@@ -1,13 +1,16 @@
 package main;
 
+import graphics.Mesh;
 import graphics.Renderer;
 import graphics.shaders.ShaderProgram;
 import graphics.shaders.impl.TexturedShader;
 import input.InputHandler;
 import input.InputReader;
 import level.Level;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class Game {
     private InputReader inputReader;
     private Renderer renderer;
     private Level level;
+    private Mesh mesh;
 
     private List<ShaderProgram> loadedShaders;
 
@@ -42,20 +46,65 @@ public class Game {
 
     private boolean running = false;
     private long window;
+    private Window window2;
 
     private Game() {
         inputReader = new InputReader();
         inputHandler = new InputHandler();
-        initWindow();
     }
 
     public boolean isRunning() {
         return running;
     }
 
-    private void initWindow() throws IllegalStateException {
-        loadedShaders = new ArrayList<>();
+    private void initLevel() {
+        float[] vertices = new float[] {
+                -0.5f, 0.5f, 0,
+                -0.5f, -0.5f, 0,
+                0.5f, -0.5f, 0,
+                0.5f, 0.5f, 0
+        };
+
+        int[] indices = new int[] {
+                0, 1, 2,
+                0, 3, 2
+        };
+
+        mesh = new Mesh(vertices, indices);
+        mesh.create();
         renderer = new Renderer();
+        level = new Level();
+    }
+
+    private int[] windowPosX = new int[1], windowPosY = new int[1];
+
+    private void fuckYOU() {
+        if (!org.lwjgl.glfw.GLFW.glfwInit()) {
+            System.err.println("ERROR: GLFW wasn't initializied");
+            return;
+        }
+
+        window = glfwCreateWindow(WIDTH, HEIGHT, "Title", NULL, NULL);
+
+        if (window == 0) {
+            System.err.println("ERROR: Window wasn't created");
+            return;
+        }
+
+        GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        windowPosX[0] = (videoMode.width() - WIDTH) / 2;
+        windowPosY[0] = (videoMode.height() - HEIGHT) / 2;
+        GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
+        GLFW.glfwMakeContextCurrent(window);
+        GL.createCapabilities();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+        GLFW.glfwShowWindow(window);
+
+        GLFW.glfwSwapInterval(1);
+    }
+
+    private void initWindow() throws IllegalStateException {
         if (glfwInit() != (GL_TRUE == 1)) {
             System.err.println("Failed to initialize GLFW"); //TODO: Log
             throw new IllegalStateException("Failed to initialize glfw");
@@ -65,10 +114,7 @@ public class Game {
         /**
          * MacOS Compatibility
          */
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "Title", NULL, NULL);
         if (window == NULL) {
@@ -77,58 +123,16 @@ public class Game {
         }
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
-        glfwShowWindow(window);
         glfwSetKeyCallback(window, inputReader);
         GL.createCapabilities();
-        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, 0, 0);
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//        Matrix4f pr_matrix = Matrix4f.orthographic(-10.0f,
-//                10.0f,
-//                -10.0f * 9.0f / 16.0f,
-//                10.0f * 9.0f / 16.0f,
-//                -1.0f,
-//                1.0f);
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwSetWindowPos(window, WIDTH/2, HEIGHT/4);
 
-        float[] vertices = new float[] {
-//            -10.0f, -10.0f * 9.0f / 16.0f, 0.0f,
-//            -10.0f, 10.0f * 9.0f / 16.0f, 0.0f,
-//            0.0f, 10.0f * 9.0f / 16.0f, 0.0f,
-//            0.0f, -10.0f * 9.0f / 16.0f, 0.0f
-                -0.5f, 0.5f, 0,
-                -0.5f, -0.5f, 0,
-                0.5f, -0.5f, 0,
-                0.5f, 0.5f, 0
-        };
-
-
-        float[] tcs = new float[] {
-                0, 1,
-                0, 1,
-                1, 1,
-                1, 0
-        };
-
-        byte[] indices = new byte[] {
-                0, 1, 3,
-                3, 1, 2
-        };
-//
-//        GraphicsLoader loader = new GraphicsLoader();
-//        Geometry geometry = loader.loadToVAO(vertices, tcs, indices);
-//        Texture texture = new Texture("src/main/resources/bg.png");
-//        TexturedGeometry tgeom = new TexturedGeometry(geometry, texture);
-//        staticShader.enable();
-//        staticShader.setUniformMat4f("pr_matrix", pr_matrix);
-//        staticShader.setUniform1i("tex", 1);
-//        staticShader.disable();
-       // loadedShaders.add(staticShader);
-
-        level = new Level();
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glfwShowWindow(window);
     }
 
     public void terminate() {
@@ -143,21 +147,28 @@ public class Game {
     public void stop() {
         if (running)
             running = false;
-        for (ShaderProgram shader : loadedShaders) {
-            shader.cleanUp();
-        }
+//        for (ShaderProgram shader : loadedShaders) {
+  //          shader.cleanUp();
+    //    }
         glfwDestroyWindow(window);
         glfwTerminate();
     }
 
     public void run() {
         running = true;
+        renderer = new Renderer();
+        int count = 0;
         while(running) {
-            if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
-                terminate();
-            }
+            //if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
+             //   terminate();
+          //  }
             update();
+            if (count < 1) {
+                level = new Level();
+                count += 1;
+            }
             render();
+            //render();
         }
         stop();
     }
@@ -170,14 +181,41 @@ public class Game {
             System.err.println(i + " GL ERROR");
             terminate();
         }
-        renderer.prepare();
-        renderer.render(level);
-        glfwSwapBuffers(window);
+      //  renderer.prepare();
+//        renderer.render(level);
+        window2.update();
+        renderer.renderMesh(mesh);
+        window2.swapBuffers();
+        //glfwSwapBuffers(window);
+    }
+
+    public void fuck() {
+        window2 = new Window(WIDTH, HEIGHT, "Game");
+        renderer = new Renderer();
+        window2.create();
+        float[] vertices = new float[] {
+                -0.5f, 0.5f, 0,
+                -0.5f, -0.5f, 0,
+                0.5f, -0.5f, 0,
+                0.5f, 0.5f, 0
+        };
+
+        int[] indices = new int[] {
+                0, 1, 2,
+                0, 3, 2
+        };
+
+        mesh = new Mesh(vertices, indices);
+        mesh.create();
+        run();
     }
 
     public static void main(String[] args) {
-       Game game = new Game();
-       game.run();
+        Game game = new Game();
+        game.fuck();
+//        game.fuckYOU();
+//        game.initLevel();
+//        game.run();
     }
 
 }

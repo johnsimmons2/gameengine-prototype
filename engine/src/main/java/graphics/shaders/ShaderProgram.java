@@ -31,10 +31,13 @@ public abstract class ShaderProgram {
         programID = glCreateProgram();
         glAttachShader(programID, vertexID);
         glAttachShader(programID, fragmentID);
+        bindAttributes();
         glLinkProgram(programID);
         glValidateProgram(programID);
-        bindAttributes();
+        getAllUniformLocations();
     }
+
+    protected abstract void getAllUniformLocations();
 
     private static int loadShader(String source, int type) {
         if (type != GL_VERTEX_SHADER && type != GL_FRAGMENT_SHADER) {
@@ -55,6 +58,7 @@ public abstract class ShaderProgram {
     protected abstract void bindAttributes();
 
     public void enable() {
+        System.out.println("Enabled shader with vertex ID " + vertexID + " and frag ID " + fragmentID);
         glUseProgram(programID);
         enabled = true;
     }

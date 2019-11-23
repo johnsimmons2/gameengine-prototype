@@ -16,6 +16,9 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class GraphicsLoader {
 
+    private static final int VERTICES_BUFFER = 0;
+    private static final int INDICES_BUFFER = 1;
+
     private List<Integer> vbos = new ArrayList<>();
     private List<Integer> vaos = new ArrayList<>();
     private List<Integer> textures = new ArrayList<>();
@@ -23,28 +26,34 @@ public class GraphicsLoader {
     public GraphicsLoader() {
     }
 
+
+
     public Geometry loadToVAOGeometry(float[] vertices, byte[] indices) {
         int vao = glGenVertexArrays();
-        int vbo = glGenBuffers();
-        int ibo = glGenBuffers();
 
         glBindVertexArray(vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);;
         glEnableVertexAttribArray(0);
 
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices), GL_STATIC_DRAW);
+        glVertexAttribPointer(VERTICES_BUFFER, 3, GL_FLOAT, false, 0, 0);;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glDisableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        int ibo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, BufferUtils.createByteBuffer(indices), GL_STATIC_DRAW);
-//        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);;
-//        glEnableVertexAttribArray(1);
-
-
+        //glVertexAttribPointer(INDICES_BUFFER, 3, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glDisableVertexAttribArray(1);
         glBindVertexArray(0);
-        return new Geometry(vao, vbo, ibo, indices.length);
+
+        return new Geometry(vao, vbo, ibo, vertices, indices);
     }
 
 //    public Geometry loadToVAO(float[] positions, float[] texturecoords, byte[] indices) {
