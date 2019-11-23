@@ -25,27 +25,21 @@ public class Renderer {
         glClearColor(0.2f, 0.38f, 0.31f, 0.5f);
     }
 
-    public void renderMesh(Mesh mesh) {
-        GL30.glBindVertexArray(mesh.getVAO());
-        glEnableVertexAttribArray(0);
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.getIBO());
-        GL11.glDrawElements(GL11.GL_TRIANGLES, mesh.getIndices().length, GL11.GL_UNSIGNED_INT, 0);
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-        glDisableVertexAttribArray(0);
-        GL30.glBindVertexArray(0);
-    }
-
     public void render(Level lvl) {
-//        lvl.getShader().enable();
-        GL30.glBindVertexArray(lvl.getGeometry().getVaoID());
+        TexturedGeometry tg = lvl.getTexturedGeometry();
+        lvl.getShader().enable();
+        GL30.glBindVertexArray(tg.getGeometry().getVaoID());
         glEnableVertexAttribArray(0);
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, lvl.getGeometry().getIboID());
-        GL11.glDrawElements(GL11.GL_TRIANGLES, lvl.getGeometry().getIndices().length, GL11.GL_UNSIGNED_INT, 0);
+        glEnableVertexAttribArray(1);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, lvl.getTexturedGeometry().getTexture().getID());
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, tg.getGeometry().getIboID());
+        GL11.glDrawElements(GL11.GL_TRIANGLES, tg.getGeometry().getIndices().length, GL11.GL_UNSIGNED_INT, 0);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
         glDisableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
         GL30.glBindVertexArray(0);
-
-//        lvl.getShader().disable();
+        lvl.getShader().disable();
     }
 
 }

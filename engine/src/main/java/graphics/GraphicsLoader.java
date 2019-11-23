@@ -1,6 +1,11 @@
 package graphics;
 
 import graphics.geometry.Geometry;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryUtil;
 import utils.BufferUtils;
 
 import java.nio.ByteBuffer;
@@ -26,44 +31,45 @@ public class GraphicsLoader {
     public GraphicsLoader() {
     }
 
+    public Geometry loadToVAO(float[] vertices, int[] indices, float[] tcs) {
+        int vaoID = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vaoID);
 
+        FloatBuffer positionBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
+        float[] positionData = new float[vertices.length * 3];
+        for (int i = 0; i < vertices.length; i++) {
+            positionData[i] = vertices[i];
+        }
+        positionBuffer.put(positionData).flip();
 
-    public Geometry loadToVAOGeometry(float[] vertices, byte[] indices) {
-        int vao = glGenVertexArrays();
+        FloatBuffer tBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
+        float[] tData = new float[tcs.length * 2];
+        for (int i = 0; i < tcs.length; i++) {
+            tData[i] = tcs[i];
+        }
+        tBuffer.put(tData).flip();
 
-        glBindVertexArray(vao);
+        int vboID = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
-        glEnableVertexAttribArray(0);
+        int tcoID = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, tcoID);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, tBuffer, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices), GL_STATIC_DRAW);
-        glVertexAttribPointer(VERTICES_BUFFER, 3, GL_FLOAT, false, 0, 0);;
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+        indicesBuffer.put(indices).flip();
 
-        glDisableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        int ibo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BufferUtils.createByteBuffer(indices), GL_STATIC_DRAW);
-        //glVertexAttribPointer(INDICES_BUFFER, 3, GL_FLOAT, false, 0, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        glDisableVertexAttribArray(1);
-        glBindVertexArray(0);
-
-        return new Geometry(vao, vbo, ibo, vertices, indices);
+        int iboID = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, iboID);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL15.GL_STATIC_DRAW);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+        return new Geometry(vaoID, vboID, iboID, vertices, indices);
     }
-
-//    public Geometry loadToVAO(float[] positions, float[] texturecoords, byte[] indices) {
-//        int vaoID = createVAO();
-//        bindIndicesBuffer(indices);
-//        storeDataInAttributeList(0, 3, positions);
-//        storeDataInAttributeList(1, 2, texturecoords);
-//        glBindVertexArray(0); // unBindVBO
-//        return new Geometry(vaoID, indices.length);
-//    }
 
     public void cleanUp() {
         for (int vao : vaos) {
