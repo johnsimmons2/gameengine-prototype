@@ -58,7 +58,6 @@ public abstract class ShaderProgram {
     protected abstract void bindAttributes();
 
     public void enable() {
-        System.out.println("Enabled shader with vertex ID " + vertexID + " and frag ID " + fragmentID);
         glUseProgram(programID);
         enabled = true;
     }

@@ -17,7 +17,7 @@ public class TexturedShader extends ShaderProgram {
 
     @Override
     protected void getAllUniformLocations() {
-
+        super.getUniform("time");
     }
 
     @Override

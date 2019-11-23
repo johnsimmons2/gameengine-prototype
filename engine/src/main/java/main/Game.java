@@ -5,6 +5,7 @@ import graphics.shaders.ShaderProgram;
 import input.InputHandler;
 import input.InputReader;
 import level.Level;
+import math.Vector3f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
@@ -32,6 +33,9 @@ public class Game {
     private InputReader inputReader;
     private Renderer renderer;
     private Level level;
+
+    private long time;
+    private float deltaTime;
 
     private static final int WIDTH = 1020;
     private static final int HEIGHT = 780;
@@ -73,6 +77,8 @@ public class Game {
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glfwShowWindow(window);
+        deltaTime = 0f;
+        time = System.currentTimeMillis();
     }
 
     public void terminate() {
@@ -92,17 +98,35 @@ public class Game {
     }
 
     public void run() {
+        deltaTime = System.currentTimeMillis() - time;
+        float deltaTime2 = 0f;
+        float deltaTime3 = 0f;
         running = true;
         renderer = new Renderer();
+        boolean flag = true;
         int count = 0;
         while(running) {
+            System.out.println(deltaTime2);
+            deltaTime3 += deltaTime / 1000000;
+            if (flag) {
+                deltaTime2 += deltaTime / 5000;
+                if (deltaTime2 > 3)
+                    flag = false;
+            } else {
+                deltaTime2 -= deltaTime / 5000;
+                if (deltaTime2 <= 1)
+                    flag = true;
+            }
             if (glfwWindowShouldClose(window) == (GL_TRUE == 1)) {
                 terminate();
             }
+            level.getShader().setUniform3f("offset", new Vector3f(deltaTime3, deltaTime3, 0));
+            level.getShader().setUniform1f("time", deltaTime2);
             update();
             render();
         }
         stop();
+        time = System.currentTimeMillis();
     }
 
     private void render() {
