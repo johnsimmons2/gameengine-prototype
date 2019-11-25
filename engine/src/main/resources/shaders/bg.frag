@@ -9,7 +9,7 @@ uniform sampler2D textureSampler;
 uniform float time;
 
 void main() {
-    float bonus = 1f;
+    float bonus = 1;
     bonus = 1 + pass_position.y;
     color = texture(textureSampler, pass_texcoord) * (time * bonus) ;
 }
